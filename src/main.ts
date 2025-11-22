@@ -2,18 +2,19 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
 import { generateCustomResponse, generateResponse, generateSpInitiatedResponse, parseSpInitiatedRequest } from './saml'
-import crypto, { sign } from 'crypto'
-import { Constants, IdentityProvider, SamlLib, ServiceProvider } from 'samlify'
-import { readFileSync } from 'fs'
-import { BindingNamespace } from 'samlify/types/src/urn'
-import zlib from 'zlib'
-
-const logins = {}
+import * as samlify from 'samlify';
+import * as validator from '@authenio/samlify-xsd-schema-validator';
+import crypto from 'crypto'
 
 const app = express()
 app.use(bodyParser.json())
 app.use(cookieParser())
 const port = 3000
+
+
+
+
+samlify.setSchemaValidator(validator);
 
 app.get('/saml', async (req, res) => {
 	const resp = await generateResponse()

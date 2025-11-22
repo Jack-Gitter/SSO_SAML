@@ -106,9 +106,6 @@ export const parseSpInitiatedRequest = async (req: any) => {
         authnRequestsSigned: false
 	})
 
-	// buggy, for some reason it always attempts to find a signature from the options
-	SamlLib.isValidXml = async () => true
-
 	const {extract} = await idp.parseLoginRequest(sp, 'redirect', req)
 	return {issuer: extract.issuer, id: extract.request.id}
 }

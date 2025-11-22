@@ -16,6 +16,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "@authenio/samlify-xsd-schema-validator": "^1.0.5",
     "body-parser": "^2.2.0",
     "cookie-parser": "^1.4.7",
     "date-fns": "^4.1.0",

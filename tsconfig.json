@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+	"skipLibCheck": true,
+    "noImplicitAny": false,
     "rootDir": "./src",
     "outDir": "./dist",
     "experimentalDecorators": true,
