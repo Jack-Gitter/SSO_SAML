@@ -1,3 +1,0 @@
-what is name format
-does authnstatement get added when i do custom template?
-what is recipient vs destination in SAML
