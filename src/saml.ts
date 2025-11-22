@@ -79,6 +79,7 @@ export const generateSpInitiatedResponse  = async (email: string, issuer: string
 		metadata: readFileSync(`${__dirname}/sp/${issuer}/metadata.xml`),
 	})
 
+	// set the id so the SP can validate the ID is valid
 	const request = {
 		extract: {
 			request: {
