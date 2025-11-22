@@ -1,11 +1,16 @@
 import express from 'express'
-import { generateResponse } from './saml'
+import { generateCustomResponse, generateResponse } from './saml'
 
 const app = express()
 const port = 3000
 
 app.get('/saml', async (req, res) => {
 	const resp = await generateResponse()
+	res.send(resp)
+})
+
+app.get('/saml-custom', async (req, res) => {
+	const resp = await generateCustomResponse()
 	res.send(resp)
 })
 
