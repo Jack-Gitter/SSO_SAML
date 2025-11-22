@@ -11,7 +11,7 @@ export const generateResponse = async () => {
 	})
 
 	const sp = ServiceProvider({
-		metadata: readFileSync(`${__dirname}/sp/metadata.xml`)
+		metadata: readFileSync(`${__dirname}/sp/metadata.xml`),
 	})
 
 	const request = {
@@ -42,7 +42,8 @@ export const generateCustomResponse = async () => {
 	})
 
 	const sp = ServiceProvider({
-		metadata: readFileSync(`${__dirname}/sp/metadata.xml`)
+		metadata: readFileSync(`${__dirname}/sp/metadata.xml`),
+		wantMessageSigned: true
 	})
 
 	const request = {
