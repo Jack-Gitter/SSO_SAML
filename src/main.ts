@@ -3,6 +3,10 @@ import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
 import { generateCustomResponse, generateResponse, generateSpInitiatedResponse, parseSpInitiatedRequest } from './saml'
 import crypto, { sign } from 'crypto'
+import { Constants, IdentityProvider, SamlLib, ServiceProvider } from 'samlify'
+import { readFileSync } from 'fs'
+import { BindingNamespace } from 'samlify/types/src/urn'
+import zlib from 'zlib'
 
 const logins = {}
 
@@ -22,7 +26,7 @@ app.get('/saml-custom', async (req, res) => {
 })
 
 app.get('/saml/auth', async (req, res) => {
-	const {issuer, id} = await parseSpInitiatedRequest(req.query.SAMLRequest as string)
+	const {issuer, id} = await parseSpInitiatedRequest(req)
 	const payload = JSON.stringify({ issuer, id });
 	const signature = crypto.createHmac('sha256', 'secret').update(payload).digest('hex');
 	res.cookie('signature', signature, {sameSite: 'strict', httpOnly: true})
@@ -42,12 +46,7 @@ app.post('/login', async (req, res) => {
 	const signature = req.cookies.signature
 	const payload = JSON.stringify({ issuer, id });
 	const expectedSignature = crypto.createHmac('sha256', 'secret').update(payload).digest('hex');
-	console.log('sig')
-	console.log(signature)
-	console.log('exp')
-	console.log(expectedSignature)
 	if (signature !== expectedSignature) {
-		console.log('here')
 		res.status(403).send()
 		return
 	}

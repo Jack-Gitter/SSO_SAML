@@ -3,6 +3,7 @@ import { addMinutes } from "date-fns"
 import { XMLParser } from "fast-xml-parser"
 import { readFileSync } from "fs"
 import { Constants, IdentityProvider, SamlLib, ServiceProvider } from "samlify"
+import { ESamlHttpRequest } from "samlify/types/src/entity"
 import zlib from 'zlib'
 
 export const generateResponse = async () => {
@@ -93,17 +94,23 @@ export const generateSpInitiatedResponse  = async (email: string, issuer: string
 
 }
 
-export const parseSpInitiatedRequest = async (samlRequestb64: string) => {
-	const compressed = Buffer.from(samlRequestb64, 'base64');
-	const xml = zlib.inflateRawSync(compressed).toString('utf-8');
-	const parser = new XMLParser({
-	  ignoreAttributes: false, 
-	});
-	const jsonObj = parser.parse(xml);
-	const authnRequest = jsonObj['samlp:AuthnRequest'];
-	const issuer = authnRequest['saml:Issuer'];
-	const id = authnRequest['@_ID']; 
-	return {issuer, id}
+export const parseSpInitiatedRequest = async (req: any) => {
+	const idp = IdentityProvider({
+		metadata: readFileSync(`${__dirname}/idp/metadata.xml`),
+		privateKey: readFileSync(`${__dirname}/idp/private-key.pem`),
+        wantAuthnRequestsSigned: false,
+	})
+
+	const sp = ServiceProvider({
+		metadata: readFileSync(`${__dirname}/sp/IAMShowcase/metadata.xml`),
+        authnRequestsSigned: false
+	})
+
+	// buggy, for some reason it always attempts to find a signature from the options
+	SamlLib.isValidXml = async () => true
+
+	const {extract} = await idp.parseLoginRequest(sp, 'redirect', req)
+	return {issuer: extract.issuer, id: extract.request.id}
 }
 
 
