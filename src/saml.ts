@@ -31,7 +31,7 @@ export const generateResponse = async () => {
 
 export const generateCustomResponse = async () => {
 
-	const template = readFileSync(`${__dirname}/templates/response-template.xml`).toString()
+	const template = readFileSync(`${__dirname}/idp/templates/response.xml`).toString()
 	const idp = IdentityProvider({
 		metadata: readFileSync(`${__dirname}/idp/metadata.xml`),
 		privateKey: readFileSync(`${__dirname}/idp/private-key.pem`),
