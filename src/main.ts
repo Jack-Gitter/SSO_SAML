@@ -31,10 +31,10 @@ app.get('/login', async (req, res) => {
 })
 
 app.post('/login', async (req, res) => {
-	const username = req.body.username
+	const email = req.body.email
 	const issuer = req.cookies.issuer
 	const id = req.cookies.id
-	const resp = await generateSpInitiatedResponse(username, issuer, id)
+	const resp = await generateSpInitiatedResponse(email, issuer, id)
 	res.send(resp)
 
 })

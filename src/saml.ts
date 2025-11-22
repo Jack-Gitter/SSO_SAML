@@ -69,8 +69,7 @@ export const generateCustomResponse = async () => {
 }
 
 
-export const generateSpInitiatedResponse  = async (username: string, issuer: string, id: string) => {
-	// look up user via username
+export const generateSpInitiatedResponse  = async (email: string, issuer: string, id: string) => {
 	const idp = IdentityProvider({
 		metadata: readFileSync(`${__dirname}/idp/metadata.xml`),
 		privateKey: readFileSync(`${__dirname}/idp/private-key.pem`)
@@ -88,7 +87,7 @@ export const generateSpInitiatedResponse  = async (username: string, issuer: str
 		}
 	}
 
-	const { context, entityEndpoint } = await idp.createLoginResponse(sp, request, 'post', {username})
+	const { context, entityEndpoint } = await idp.createLoginResponse(sp, request, 'post', {email})
 
 	return { context, entityEndpoint, relayState: 'light-blue' }
 
