@@ -40,6 +40,13 @@
         })
       });
 
+
+		console.log('code')
+	console.log(res.status)
+	if (res.status === 403) {
+		window.location.href = 'http://localhost:3000/error';
+		return; // stop further execution
+	  }
       // Expect JSON { context, entityEndpoint, relayState }
       const { context, entityEndpoint, relayState } = await res.json();
 
