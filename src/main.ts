@@ -18,8 +18,18 @@ app.get('/saml-custom', async (req, res) => {
 })
 
 app.get('/saml/auth', async (req, res) => {
-	const resp = await parseSpInitiatedRequest(req.query.SAMLRequest as string)
+	const issuer = await parseSpInitiatedRequest(req.query.SAMLRequest as string)
+	res.cookie('issuer', issuer, {sameSite: 'strict', httpOnly: true})
+	res.redirect('/login')
+})
+
+app.get('/login', async (req, res) => {
+	res.sendFile(`${__dirname}/html/login.html`)
+})
+
+app.post('/login', async (req, res) => {
 	res.send(200)
+
 })
 
 app.get('/', async (req, res) => {

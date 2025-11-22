@@ -72,11 +72,12 @@ export const parseSpInitiatedRequest = async (samlRequestb64: string) => {
 	const compressed = Buffer.from(samlRequestb64, 'base64');
 	const xml = zlib.inflateRawSync(compressed).toString('utf-8');
 	const parser = new XMLParser({
-	  ignoreAttributes: false, // keep attributes if needed
+	  ignoreAttributes: false, 
 	});
 	const jsonObj = parser.parse(xml);
 	const issuer = jsonObj['samlp:AuthnRequest']['saml:Issuer'];
-	console.log(issuer)
+	// store the issuer in httponly and same-site cookie
+	return issuer
 
 
 /*	const idp = IdentityProvider({
