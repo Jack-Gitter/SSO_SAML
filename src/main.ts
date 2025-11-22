@@ -1,29 +1,17 @@
-import { readFileSync } from "fs"
-import { Constants, IdentityProvider, ServiceProvider } from "samlify"
+import express from 'express'
+import { generateResponse } from './saml'
 
-const main = async () => {
-	const idp = IdentityProvider({
-		metadata: readFileSync(`${__dirname}/idp/metadata.xml`),
-		privateKey: readFileSync(`${__dirname}/idp/private-key.pem`)
-	})
+const app = express()
+const port = 3000
 
-	const sp = ServiceProvider({
-		metadata: readFileSync(`${__dirname}/sp/metadata.xml`)
-	})
+app.get('/saml', async (req, res) => {
+	const resp = await generateResponse()
+	res.send(resp)
+})
 
-	const request = {
-		extract: {
-			request: {
-				id: undefined
-			}
-		}
-	}
+app.get('/', async (req, res) => {
+	res.sendFile(`${__dirname}/fe/index.html`)
+})
 
-	const response = await idp.createLoginResponse(sp, request, 'post', {})
 
-	console.log(response)
-
-	console.log('hello')
-}
-
-main()
+app.listen(port, () => { console.log(`listening on ${port}`) })

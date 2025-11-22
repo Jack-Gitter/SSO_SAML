@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSO Page</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <form id="samlForm" method="POST">
+        <input type="hidden" name="SAMLResponse" id="samlResponse" value="">
+        <button type="button" id="ssoButton">sso</button>
+    </form>
+
+    <script>
+        document.getElementById('ssoButton').addEventListener('click', async function() {
+            try {
+                const response = await fetch('http://localhost:3000/saml');
+                const data = await response.json();
+                
+                console.log('Received data:', data);
+                
+                const samlResponse = data.context;
+                const acsUrl = data.entityEndpoint;
+                
+                const form = document.getElementById('samlForm');
+                form.action = acsUrl;
+                document.getElementById('samlResponse').value = samlResponse;
+                
+                form.submit();
+                
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+    </script>
+</body>
+</html>
