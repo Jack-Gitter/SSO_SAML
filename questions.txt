@@ -1,1 +1,2 @@
 audience vs destination vs recipient
+what is NameID in saml
