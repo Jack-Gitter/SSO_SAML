@@ -10,10 +10,6 @@ const app = express()
 app.use(bodyParser.json())
 app.use(cookieParser())
 const port = 3000
-
-
-
-
 samlify.setSchemaValidator(validator);
 
 app.get('/saml', async (req, res) => {
@@ -62,6 +58,5 @@ app.get('/error', async (req, res) => {
 app.get('/', async (req, res) => {
 	res.sendFile(`${__dirname}/html/index.html`)
 })
-
 
 app.listen(port, () => { console.log(`listening on ${port}`) })
