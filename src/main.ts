@@ -15,7 +15,7 @@ app.get('/saml-custom', async (req, res) => {
 })
 
 app.get('/', async (req, res) => {
-	res.sendFile(`${__dirname}/fe/index.html`)
+	res.sendFile(`${__dirname}/html/index.html`)
 })
 
 
