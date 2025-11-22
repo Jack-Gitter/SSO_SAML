@@ -1,10 +1,12 @@
 import express from 'express'
 import bodyParser from 'body-parser'
-import { generateCustomResponse, generateResponse, parseSpInitiatedRequest } from './saml'
+import cookieParser from 'cookie-parser'
+import { generateCustomResponse, generateResponse, generateSpInitiatedResponse, parseSpInitiatedRequest } from './saml'
 
 
 const app = express()
 app.use(bodyParser.json())
+app.use(cookieParser())
 const port = 3000
 
 app.get('/saml', async (req, res) => {
@@ -18,8 +20,9 @@ app.get('/saml-custom', async (req, res) => {
 })
 
 app.get('/saml/auth', async (req, res) => {
-	const issuer = await parseSpInitiatedRequest(req.query.SAMLRequest as string)
+	const {issuer, id} = await parseSpInitiatedRequest(req.query.SAMLRequest as string)
 	res.cookie('issuer', issuer, {sameSite: 'strict', httpOnly: true})
+	res.cookie('id', id, {sameSite: 'strict', httpOnly: true})
 	res.redirect('/login')
 })
 
@@ -28,7 +31,11 @@ app.get('/login', async (req, res) => {
 })
 
 app.post('/login', async (req, res) => {
-	res.send(200)
+	const username = req.body.username
+	const issuer = req.cookies.issuer
+	const id = req.cookies.id
+	const resp = await generateSpInitiatedResponse(username, issuer, id)
+	res.send(resp)
 
 })
 

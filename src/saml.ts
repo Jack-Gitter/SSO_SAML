@@ -68,6 +68,32 @@ export const generateCustomResponse = async () => {
 
 }
 
+
+export const generateSpInitiatedResponse  = async (username: string, issuer: string, id: string) => {
+	// look up user via username
+	const idp = IdentityProvider({
+		metadata: readFileSync(`${__dirname}/idp/metadata.xml`),
+		privateKey: readFileSync(`${__dirname}/idp/private-key.pem`)
+	})
+
+	const sp = ServiceProvider({
+		metadata: readFileSync(`${__dirname}/sp/${issuer}/metadata.xml`),
+	})
+
+	const request = {
+		extract: {
+			request: {
+				id
+			}
+		}
+	}
+
+	const { context, entityEndpoint } = await idp.createLoginResponse(sp, request, 'post', {username})
+
+	return { context, entityEndpoint, relayState: 'light-blue' }
+
+}
+
 export const parseSpInitiatedRequest = async (samlRequestb64: string) => {
 	const compressed = Buffer.from(samlRequestb64, 'base64');
 	const xml = zlib.inflateRawSync(compressed).toString('utf-8');
@@ -75,31 +101,10 @@ export const parseSpInitiatedRequest = async (samlRequestb64: string) => {
 	  ignoreAttributes: false, 
 	});
 	const jsonObj = parser.parse(xml);
-	const issuer = jsonObj['samlp:AuthnRequest']['saml:Issuer'];
-	// store the issuer in httponly and same-site cookie
-	return issuer
-
-
-/*	const idp = IdentityProvider({
-		metadata: readFileSync(`${__dirname}/idp/metadata.xml`),
-		privateKey: readFileSync(`${__dirname}/idp/private-key.pem`)
-	})
-
-	const sp = ServiceProvider({
-		metadata: readFileSync(`${__dirname}/sp/metadata.xml`),
-	})
-
-	const request = {
-		extract: {
-			request: {
-				id: undefined
-			}
-		}
-	}
-
-	const { context, entityEndpoint } = await idp.createLoginResponse(sp, request, 'post', {email: 'jack.gitter@gmail.com'})
-
-	return { context, entityEndpoint, relayState: 'light-blue' }*/
+	const authnRequest = jsonObj['samlp:AuthnRequest'];
+	const issuer = authnRequest['saml:Issuer'];
+	const id = authnRequest['@_ID']; 
+	return {issuer, id}
 }
 
 
