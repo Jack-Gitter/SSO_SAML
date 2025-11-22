@@ -1,10 +1,10 @@
 import express from 'express'
 import bodyParser from 'body-parser'
-import { generateCustomResponse, generateResponse } from './saml'
+import { generateCustomResponse, generateResponse, parseSpInitiatedRequest } from './saml'
 
 
 const app = express()
-app.use(bodyParser)
+app.use(bodyParser.json())
 const port = 3000
 
 app.get('/saml', async (req, res) => {
@@ -17,8 +17,8 @@ app.get('/saml-custom', async (req, res) => {
 	res.send(resp)
 })
 
-app.get('/saml-sp-initiated', async (req, res) => {
-	console.log(req.body)
+app.get('/saml/auth', async (req, res) => {
+	const resp = await parseSpInitiatedRequest(req.query.SAMLRequest as string)
 	res.send(200)
 })
 

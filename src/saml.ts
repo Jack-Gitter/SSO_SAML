@@ -1,7 +1,9 @@
 import { randomUUID } from "crypto"
 import { addMinutes } from "date-fns"
+import { XMLParser } from "fast-xml-parser"
 import { readFileSync } from "fs"
 import { Constants, IdentityProvider, SamlLib, ServiceProvider } from "samlify"
+import zlib from 'zlib'
 
 export const generateResponse = async () => {
 	const idp = IdentityProvider({
@@ -10,7 +12,7 @@ export const generateResponse = async () => {
 	})
 
 	const sp = ServiceProvider({
-		metadata: readFileSync(`${__dirname}/sp/metadata.xml`),
+		metadata: readFileSync(`${__dirname}/sp/IAMShowcase/metadata.xml`),
 	})
 
 	const request = {
@@ -41,7 +43,7 @@ export const generateCustomResponse = async () => {
 	})
 
 	const sp = ServiceProvider({
-		metadata: readFileSync(`${__dirname}/sp/metadata.xml`),
+		metadata: readFileSync(`${__dirname}/sp/IAMShowcase/metadata.xml`),
 		wantMessageSigned: true
 	})
 
@@ -66,8 +68,18 @@ export const generateCustomResponse = async () => {
 
 }
 
-export const generateSpInitiatedResponse = async () => {
-	const idp = IdentityProvider({
+export const parseSpInitiatedRequest = async (samlRequestb64: string) => {
+	const compressed = Buffer.from(samlRequestb64, 'base64');
+	const xml = zlib.inflateRawSync(compressed).toString('utf-8');
+	const parser = new XMLParser({
+	  ignoreAttributes: false, // keep attributes if needed
+	});
+	const jsonObj = parser.parse(xml);
+	const issuer = jsonObj['samlp:AuthnRequest']['saml:Issuer'];
+	console.log(issuer)
+
+
+/*	const idp = IdentityProvider({
 		metadata: readFileSync(`${__dirname}/idp/metadata.xml`),
 		privateKey: readFileSync(`${__dirname}/idp/private-key.pem`)
 	})
@@ -86,7 +98,7 @@ export const generateSpInitiatedResponse = async () => {
 
 	const { context, entityEndpoint } = await idp.createLoginResponse(sp, request, 'post', {email: 'jack.gitter@gmail.com'})
 
-	return { context, entityEndpoint, relayState: 'light-blue' }
+	return { context, entityEndpoint, relayState: 'light-blue' }*/
 }
 
 
