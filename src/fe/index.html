@@ -13,6 +13,12 @@
         <button type="button" id="ssoButton">sso</button>
     </form>
 
+    <form id="samlFormCustom" method="POST">
+        <input type="hidden" name="SAMLResponse" id="samlResponseCustom" value="">
+        <input type="hidden" name="RelayState" id="relayStateCustom" value="">
+        <button type="button" id="ssoButtonCustom">sso custom</button>
+    </form>
+
     <script>
         document.getElementById('ssoButton').addEventListener('click', async function() {
             try {
@@ -29,6 +35,33 @@
                 form.action = acsUrl;
                 document.getElementById('samlResponse').value = samlResponse;
                 document.getElementById('relayState').value = relayState;
+                
+                form.submit();
+                
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+
+        document.getElementById('ssoButtonCustom').addEventListener('click', async function() {
+            try {
+                const response = await fetch('http://localhost:3000/saml-custom');
+                const data = await response.json();
+                
+                console.log('Received data:', data);
+                
+                const samlResponse = data.context;
+                const acsUrl = data.entityEndpoint;
+				const relayState = data.relayState
+
+				console.log(samlResponse)
+				console.log(relayState)
+				console.log(acsUrl)
+                
+                const form = document.getElementById('samlFormCustom');
+                form.action = acsUrl;
+                document.getElementById('samlResponseCustom').value = samlResponse;
+                document.getElementById('relayStateCustom').value = relayState;
                 
                 form.submit();
                 
