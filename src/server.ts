@@ -22,10 +22,8 @@ export const registerEndpoints = (app: express.Express) => {
 	})
 
 	app.get('/saml/auth', async (req: Request, res: Response) => {
-		console.log(req.cookies)
 		const {issuer, id} = await parseSpInitiatedLoginRequest(req, ENTITY_ID.I_AM_SHOWCASE)
-		const payload = JSON.stringify({ issuer, id });
-		const signature = crypto.createHmac('sha256', 'secret').update(payload).digest('hex');
+		const signature = generateSignature(issuer, id)
 		res.cookie('signature', signature, {sameSite: 'strict', httpOnly: true})
 		res.cookie('issuer', issuer, {sameSite: 'strict', httpOnly: true})
 		res.cookie('id', id, {sameSite: 'strict', httpOnly: true})
@@ -41,8 +39,7 @@ export const registerEndpoints = (app: express.Express) => {
 		const issuer = req.cookies.issuer
 		const id = req.cookies.id
 		const signature = req.cookies.signature
-		const payload = JSON.stringify({ issuer, id });
-		const expectedSignature = crypto.createHmac('sha256', 'secret').update(payload).digest('hex');
+		const expectedSignature = generateSignature(issuer, id)
 		if (signature !== expectedSignature) {
 			res.status(403).send()
 			return
@@ -60,3 +57,10 @@ export const registerEndpoints = (app: express.Express) => {
 		res.sendFile(`${__dirname}/html/index.html`)
 	})
 }
+
+const generateSignature = (...fields: string[]) => {
+	const payload = JSON.stringify(fields);
+	const signature = crypto.createHmac('sha256', 'secret').update(payload).digest('hex');
+	return signature
+}
+
