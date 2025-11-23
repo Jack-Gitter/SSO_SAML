@@ -1,11 +1,13 @@
 import { registerXMLSchemaValidator } from './saml';
-import { app, registerEndpoints, registerMiddleware } from './server';
+import { registerEndpoints, registerMiddleware } from './server';
+import express from 'express'
 
 const main = async () => {
-	registerMiddleware()
-	registerEndpoints()
-	registerXMLSchemaValidator()
+	const app = express()
 	const port = 3000
+	registerMiddleware(app)
+	registerEndpoints(app)
+	registerXMLSchemaValidator()
 	app.listen(port, () => { console.log(`listening on ${port}`) })
 }
 

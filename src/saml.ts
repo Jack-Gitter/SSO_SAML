@@ -9,14 +9,14 @@ export const registerXMLSchemaValidator = () => {
 	samlify.setSchemaValidator(validator);
 }
 
-export const generateDefaultSAMLResponse = async () => {
+export const generateDefaultSAMLResponse = async (entityId: string) => {
 	const idp = IdentityProvider({
 		metadata: readFileSync(`${__dirname}/idp/metadata.xml`),
 		privateKey: readFileSync(`${__dirname}/idp/private-key.pem`)
 	})
 
 	const sp = ServiceProvider({
-		metadata: readFileSync(`${__dirname}/sp/IAMShowcase/metadata.xml`),
+		metadata: readFileSync(`${__dirname}/sp/${entityId}/metadata.xml`),
 	})
 
 	const request = {
@@ -27,14 +27,14 @@ export const generateDefaultSAMLResponse = async () => {
 		}
 	}
 
-	const { context, entityEndpoint } = await idp.createLoginResponse(sp, request, 'post', {email: 'jack.gitter@gmail.com'})
+	const { context, entityEndpoint } = await idp.createLoginResponse(sp, request, Constants.wording.binding.post, {email: 'jack.a.gitter@gmail.com'})
 
 	return { context, entityEndpoint, relayState: 'light-blue' }
 
 }
 
 
-export const generateCustomSAMLResponse = async () => {
+export const generateCustomSAMLResponse = async (entityId: string) => {
 
 	const template = readFileSync(`${__dirname}/idp/templates/response.xml`).toString()
 	const idp = IdentityProvider({
@@ -47,7 +47,7 @@ export const generateCustomSAMLResponse = async () => {
 	})
 
 	const sp = ServiceProvider({
-		metadata: readFileSync(`${__dirname}/sp/IAMShowcase/metadata.xml`),
+		metadata: readFileSync(`${__dirname}/sp/${entityId}/metadata.xml`),
 		wantMessageSigned: true
 	})
 
@@ -65,7 +65,7 @@ export const generateCustomSAMLResponse = async () => {
 	}
 
 	const { context, entityEndpoint } = await idp.createLoginResponse(sp, request, Constants.wording.binding.post, user, (template: string) => {
-		return createCustomSAMLResponseTemplateCallback(idp, sp, user, template)
+		return createTemplateCallback(idp, sp, user, template)
 	})
 
 	return { context, entityEndpoint, relayState: 'light-blue' }
@@ -91,13 +91,13 @@ export const generateSpInitiatedSAMLResponse  = async (email: string, issuer: st
 		}
 	}
 
-	const { context, entityEndpoint } = await idp.createLoginResponse(sp, request, 'post', {email})
+	const { context, entityEndpoint } = await idp.createLoginResponse(sp, request, Constants.wording.binding.post, {email})
 
 	return { context, entityEndpoint, relayState: 'light-blue' }
 
 }
 
-export const parseSpInitiatedLoginRequest = async (req: any) => {
+export const parseSpInitiatedLoginRequest = async (req: any, entityId: string) => {
 	const idp = IdentityProvider({
 		metadata: readFileSync(`${__dirname}/idp/metadata.xml`),
 		privateKey: readFileSync(`${__dirname}/idp/private-key.pem`),
@@ -105,7 +105,7 @@ export const parseSpInitiatedLoginRequest = async (req: any) => {
 	})
 
 	const sp = ServiceProvider({
-		metadata: readFileSync(`${__dirname}/sp/IAMShowcase/metadata.xml`),
+		metadata: readFileSync(`${__dirname}/sp/${entityId}/metadata.xml`),
         authnRequestsSigned: false
 	})
 
@@ -114,7 +114,7 @@ export const parseSpInitiatedLoginRequest = async (req: any) => {
 }
 
 
-const createCustomSAMLResponseTemplateCallback = (idp: any, sp: any, user: any, template: string) => {
+const createTemplateCallback = (idp: any, sp: any, user: any, template: string) => {
     const acsUrl = sp.entityMeta.getAssertionConsumerService(Constants.wording.binding.post)
 
     const nameIDFormat = idp.entitySetting.nameIDFormat

@@ -3,27 +3,29 @@ import cookieParser from "cookie-parser";
 import express, { Request, Response } from 'express'
 import crypto from 'crypto'
 import { generateCustomSAMLResponse, generateDefaultSAMLResponse, generateSpInitiatedSAMLResponse, parseSpInitiatedLoginRequest } from "./saml";
+import { ENTITY_ID } from "./types/enums";
 
-export const app = express()
-
-export const registerMiddleware = () => {
+export const registerMiddleware = (app: express.Express) => {
 	app.use(bodyParser.json())
 	app.use(cookieParser())
 }
 
-export const registerEndpoints = () => {
+export const registerEndpoints = (app: express.Express) => {
 	app.get('/sso/iamshowcase/login', async (_req: Request, res: Response) => {
-		const resp = await generateDefaultSAMLResponse()
+		const resp = await generateDefaultSAMLResponse(ENTITY_ID.I_AM_SHOWCASE)
 		res.send(resp)
 	})
 
 	app.get('/sso/iamshowcase/custom/login', async (_req: Request, res: Response) => {
-		const resp = await generateCustomSAMLResponse()
+		const resp = await generateCustomSAMLResponse(ENTITY_ID.I_AM_SHOWCASE)
 		res.send(resp)
 	})
 
 	app.get('/saml/auth', async (req: Request, res: Response) => {
-		const {issuer, id} = await parseSpInitiatedLoginRequest(req)
+		// can i parse the entityId from the request somehow -- so we know what SP to 
+		// instantiate?
+		console.log(req.cookies)
+		const {issuer, id} = await parseSpInitiatedLoginRequest(req, ENTITY_ID.I_AM_SHOWCASE)
 		const payload = JSON.stringify({ issuer, id });
 		const signature = crypto.createHmac('sha256', 'secret').update(payload).digest('hex');
 		res.cookie('signature', signature, {sameSite: 'strict', httpOnly: true})
@@ -55,6 +57,7 @@ export const registerEndpoints = () => {
 	app.get('/error', async (_req: Request, res: Response) => {
 		res.sendFile(`${__dirname}/html/error.html`)
 	})
+
 	app.get('/', async (_req: Request, res: Response) => {
 		res.sendFile(`${__dirname}/html/index.html`)
 	})
