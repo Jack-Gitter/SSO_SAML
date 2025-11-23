@@ -1,10 +1,7 @@
 import { randomUUID } from "crypto"
 import { addMinutes } from "date-fns"
-import { XMLParser } from "fast-xml-parser"
 import { readFileSync } from "fs"
 import { Constants, IdentityProvider, SamlLib, ServiceProvider } from "samlify"
-import { ESamlHttpRequest } from "samlify/types/src/entity"
-import zlib from 'zlib'
 
 export const generateResponse = async () => {
 	const idp = IdentityProvider({

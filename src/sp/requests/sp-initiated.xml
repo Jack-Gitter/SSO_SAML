@@ -1,0 +1,12 @@
+<samlp:AuthnRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
+                    xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+                    ForceAuthn="false"
+                    ID="ac3757ab77f8f87c695cbc073c3720b4e4348e518"
+                    IssueInstant="2025-11-23T13:31:51Z"
+                    Destination="http://localhost:3000/saml/auth"
+                    AssertionConsumerServiceURL="https://sptest.iamshowcase.com/acs"
+                    ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+                    Version="2.0"
+                    >
+    <saml:Issuer>IAMShowcase</saml:Issuer>
+</samlp:AuthnRequest>
