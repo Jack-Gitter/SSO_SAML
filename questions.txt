@@ -1,2 +1,5 @@
-audience vs destination vs recipient
-what is NameID in saml
+todo: 
+	* Add types to the code everywhere
+	* Add the resulting SAML responses to the IDP folder for documentation
+	* Add comments to the login page, where you would look up user data as the idp
+	* Explain that the overall saml structure doesn't change, but you can store specific configuartion information for each SP
