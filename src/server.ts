@@ -22,8 +22,6 @@ export const registerEndpoints = (app: express.Express) => {
 	})
 
 	app.get('/saml/auth', async (req: Request, res: Response) => {
-		// can i parse the entityId from the request somehow -- so we know what SP to 
-		// instantiate?
 		console.log(req.cookies)
 		const {issuer, id} = await parseSpInitiatedLoginRequest(req, ENTITY_ID.I_AM_SHOWCASE)
 		const payload = JSON.stringify({ issuer, id });
