@@ -2,8 +2,14 @@ import { randomUUID } from "crypto"
 import { addMinutes } from "date-fns"
 import { readFileSync } from "fs"
 import { Constants, IdentityProvider, SamlLib, ServiceProvider } from "samlify"
+import * as samlify from 'samlify';
+import * as validator from '@authenio/samlify-xsd-schema-validator';
 
-export const generateResponse = async () => {
+export const registerXMLSchemaValidator = () => {
+	samlify.setSchemaValidator(validator);
+}
+
+export const generateDefaultSAMLResponse = async () => {
 	const idp = IdentityProvider({
 		metadata: readFileSync(`${__dirname}/idp/metadata.xml`),
 		privateKey: readFileSync(`${__dirname}/idp/private-key.pem`)
@@ -28,7 +34,7 @@ export const generateResponse = async () => {
 }
 
 
-export const generateCustomResponse = async () => {
+export const generateCustomSAMLResponse = async () => {
 
 	const template = readFileSync(`${__dirname}/idp/templates/response.xml`).toString()
 	const idp = IdentityProvider({
@@ -59,7 +65,7 @@ export const generateCustomResponse = async () => {
 	}
 
 	const { context, entityEndpoint } = await idp.createLoginResponse(sp, request, Constants.wording.binding.post, user, (template: string) => {
-		return createTemplateCallback(idp, sp, user, template)
+		return createCustomSAMLResponseTemplateCallback(idp, sp, user, template)
 	})
 
 	return { context, entityEndpoint, relayState: 'light-blue' }
@@ -67,7 +73,7 @@ export const generateCustomResponse = async () => {
 }
 
 
-export const generateSpInitiatedResponse  = async (email: string, issuer: string, id: string) => {
+export const generateSpInitiatedSAMLResponse  = async (email: string, issuer: string, id: string) => {
 	const idp = IdentityProvider({
 		metadata: readFileSync(`${__dirname}/idp/metadata.xml`),
 		privateKey: readFileSync(`${__dirname}/idp/private-key.pem`)
@@ -91,7 +97,7 @@ export const generateSpInitiatedResponse  = async (email: string, issuer: string
 
 }
 
-export const parseSpInitiatedRequest = async (req: any) => {
+export const parseSpInitiatedLoginRequest = async (req: any) => {
 	const idp = IdentityProvider({
 		metadata: readFileSync(`${__dirname}/idp/metadata.xml`),
 		privateKey: readFileSync(`${__dirname}/idp/private-key.pem`),
@@ -108,7 +114,7 @@ export const parseSpInitiatedRequest = async (req: any) => {
 }
 
 
-const createTemplateCallback = (idp: any, sp: any, user: any, template: string) => {
+const createCustomSAMLResponseTemplateCallback = (idp: any, sp: any, user: any, template: string) => {
     const acsUrl = sp.entityMeta.getAssertionConsumerService(Constants.wording.binding.post)
 
     const nameIDFormat = idp.entitySetting.nameIDFormat

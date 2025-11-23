@@ -22,7 +22,7 @@
     <script>
         document.getElementById('ssoButton').addEventListener('click', async function() {
             try {
-                const response = await fetch('http://localhost:3000/saml');
+                const response = await fetch('http://localhost:3000/sso/iamshowcase/login');
                 const data = await response.json();
                 
                 const samlResponse = data.context;
@@ -43,7 +43,7 @@
 
         document.getElementById('ssoButtonCustom').addEventListener('click', async function() {
             try {
-                const response = await fetch('http://localhost:3000/saml-custom');
+                const response = await fetch('http://localhost:3000/sso/iamshowcase/custom/login');
                 const data = await response.json();
                 
                 const samlResponse = data.context;
