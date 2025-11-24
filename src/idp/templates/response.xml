@@ -12,6 +12,9 @@
       </saml:SubjectConfirmation>
     </saml:Subject>
 	<saml:Conditions NotBefore="{NotBefore}" NotOnOrAfter="{NotOnOrAfter}">
+      <saml:AudienceRestriction>
+        <saml:Audience>{AudienceURI}</saml:Audience>
+      </saml:AudienceRestriction>
     </saml:Conditions>
 	<saml:AuthnStatement AuthnInstant="{AuthnInstant}" SessionNotOnOrAfter="{NotOnOrAfter}" SessionIndex="{SessionIndex}">
       <saml:AuthnContext>

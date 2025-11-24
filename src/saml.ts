@@ -142,6 +142,7 @@ const createTemplateCallback = (idp: any, sp: any, user: any, template: string) 
 		SessionIndex: sessionIndex,
 		Name: user.name,
 		Email: user.email,
+		AudienceURI: acsUrl
     }
 
     return {
