@@ -60,7 +60,7 @@ export const generateCustomSAMLResponse = async (entityId: string) => {
 	}
 
 	const user = {
-		email: 'jack.gitter@gmail.com',
+		email: 'jack.a.gitter@gmail.com',
 		name: 'jack',
 	}
 
